@@ -1,10 +1,9 @@
 package filesearch;
 
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -16,13 +15,13 @@ public class FileSearch {
 	
 	/**
 	 * Count the number of words that match supplied word in supplied file
-	 * @param file			file to process
+	 * @param file		file to process (loaded as resource)
 	 * @param wordToMatch	word to look for
 	 * @return				number of matches
 	 */
 	public int countInstances(String file, String wordToMatch){
-		try (BufferedReader reader = Files.newBufferedReader(
-		        Paths.get(file), StandardCharsets.UTF_8)) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+			getClass().getResourceAsStream(file), StandardCharsets.UTF_8))) {
 			final Pattern wordMatcher = Pattern.compile(WORD_REGEXP);
 			return (int) reader.lines()
 					.flatMap(wordMatcher::splitAsStream)
@@ -37,12 +36,12 @@ public class FileSearch {
 
 	/**
 	 * Count the number of words in supplied file
-	 * @param file	file to process
-	 * @return		total number of words
+	 * @param file	file to process (loaded as resource)
+	 * @return	total number of words
 	 */
 	public int countWords(String file){
-		try (BufferedReader reader = Files.newBufferedReader(
-		        Paths.get(file), StandardCharsets.UTF_8)) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+			getClass().getResourceAsStream(file), StandardCharsets.UTF_8))) {
 			final Pattern wordMatcher = Pattern.compile(WORD_REGEXP);
 			return (int) reader.lines()
 					.flatMap(wordMatcher::splitAsStream)
@@ -57,8 +56,8 @@ public class FileSearch {
 	/**
 	 * Count the number of different words in supplied file
 	 * uses case-insensitive match.
-	 * @param file	file to process
-	 * @return		total number of different words
+	 * @param file	file to process (loaded as resource)
+	 * @return	total number of different words
 	 */
 	public int countDistinctWords(String file){
 		return process(file, 
@@ -71,8 +70,8 @@ public class FileSearch {
 	/**
 	 * Count the number of letters in the longest word in supplied file
 	 * uses case-insensitive match.
-	 * @param file	file to process
-	 * @return		length of longest word
+	 * @param file	file to process (loaded as resource)
+	 * @return	length of longest word
 	 */	
 	public int longestWordLength(String file){
 		return process(file, 
@@ -84,8 +83,8 @@ public class FileSearch {
 	//This method can be used to shorten the methods above, by extracting the repeating
 	//behaviour, and taking in a function to deal with the specialised behaviour
 	private int process(String file, Function<Stream<String>, Integer>wordProcessor ){
-		try (BufferedReader reader = Files.newBufferedReader(
-		        Paths.get(file), StandardCharsets.UTF_8)) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+			getClass().getResourceAsStream(file), StandardCharsets.UTF_8))) {
 			final Pattern wordMatcher = Pattern.compile(WORD_REGEXP);
 			return wordProcessor.apply( reader.lines()
 					.flatMap(wordMatcher::splitAsStream));
